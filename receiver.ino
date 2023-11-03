@@ -1,5 +1,6 @@
-#include <ArduinoMqttClient>
+#include <ArduinoMqttClient>  // Include the Arduino MQTT Client library
 
+// Depending on the board, include the appropriate Wi-Fi library
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2)
 #include <WiFiNINA.h>
 #elif defined(ARDUINO_SAMD_MKR1000)
@@ -10,29 +11,31 @@
 #include <WiFi.h>
 #endif
 
+// Wi-Fi credentials (change these to match your network)
 char ssid[] = "Tanmaya's Iphone (2)";
 char pass[] = "tanmayaspw";
-int light = 13;
 
-WiFiClient wifiClient;
-MqttClient mqttClient(wifiClient);
-const char broker[] = "mqtt-dashboard.com";
-int port = 1883;
-const char topic[] = "mywave";
+int light = 13;  // Define the LED pin
+
+WiFiClient wifiClient;  // Create a Wi-Fi client
+MqttClient mqttClient(wifiClient);  // Create an MQTT client using the Wi-Fi client
+const char broker[] = "mqtt-dashboard.com";  // MQTT broker address
+int port = 1883;  // MQTT broker port
+const char topic[] = "mywave";  // MQTT topic to subscribe to
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(light, OUTPUT);
+  Serial.begin(9600);  // Initialize the serial communication
+  pinMode(light, OUTPUT);  // Set the LED pin as an output
 
   while (!Serial) {
-    ;
+    ;  // Wait for the serial connection to be established
   }
 
   Serial.print("Connecting to WPA SSID: ");
   Serial.println(ssid);
 
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
-    Serial.print(".");
+    Serial.print(".");  // Wait for the Wi-Fi connection to be established
     delay(5000);
   }
 
@@ -45,7 +48,6 @@ void setup() {
   if (!mqttClient.connect(broker, port)) {
     Serial.print("MQTT connection failed! Error code = ");
     Serial.println(mqttClient.connectError());
-
     while (1);
   }
 
@@ -55,11 +57,11 @@ void setup() {
   Serial.println(topic);
   Serial.println();
 
-  mqttClient.subscribe(topic);
+  mqttClient.subscribe(topic);  // Subscribe to the specified MQTT topic
 }
 
 void loop() {
-  int messageSize = mqttClient.parseMessage();
+  int messageSize = mqttClient.parseMessage();  // Check for incoming MQTT messages
 
   if (messageSize) {
     Serial.print("Received a message with topic '");
@@ -69,11 +71,12 @@ void loop() {
     Serial.println(" bytes:");
 
     while (mqttClient.available()) {
-      Serial.print((char)mqttClient.read());
+      Serial.print((char)mqttClient.read());  // Print the received MQTT message
     }
 
     Serial.println();
 
+    // Blink the LED to indicate message reception
     digitalWrite(light, HIGH);
     delay(200);
     digitalWrite(light, LOW);
@@ -86,6 +89,7 @@ void loop() {
     delay(200);
     digitalWrite(light, LOW);
     delay(200);
-    Serial.println();
+
+    Serial.println();  // Print a newline
   }
 }
