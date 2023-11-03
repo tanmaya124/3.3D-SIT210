@@ -1,4 +1,4 @@
-#include <ArduinoMqttClient.h>
+#include <ArduinoMqttClient.h> // Include the Arduino MQTT Client library
 
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_AVR_UNO_WIFI_REV2)
 #include <WiFiNINA.h>
@@ -11,23 +11,23 @@
 #endif
 
 char ssid[] = "Tanmaya's Iphone (2)";
-char pass[] = "tanmayaspw"; 
+char pass[] = "tanmayaspw";
 
 // Define pins for the ultrasonic sensor
-const int trigPin = 2;
-const int echoPin = 3;
+const int trigPin = 2;  // Trigger pin of the ultrasonic sensor
+const int echoPin = 3;  // Echo pin of the ultrasonic sensor
 
-float duration, distance;
+float duration, distance;  // Variables to store distance measurement
 
 WiFiClient wifiClient;
-MqttClient mqttClient(wifiClient); 
+MqttClient mqttClient(wifiClient);
 
-const char broker[] = "mqtt-dashboard.com"; // MQTT broker server
-int port = 1883; // MQTT broker port
-const char topic[] = "mywave"; // MQTT topic
+const char broker[] = "mqtt-dashboard.com";  // MQTT broker server address
+int port = 1883;  // MQTT broker port
+const char topic[] = "mywave";  // MQTT topic
 
-const long interval = 1000; // Time interval for measurements
-unsigned long previousMillis = 0;
+const long interval = 1000;  // Time interval for taking distance measurements
+unsigned long previousMillis = 0;  // Stores the last time measurements were taken
 
 int count = 0;
 
@@ -79,7 +79,7 @@ void loop() {
     digitalWrite(trigPin, LOW);
 
     duration = pulseIn(echoPin, HIGH);
-    distance = (duration * .0343) / 2;
+    distance = (duration * 0.0343) / 2;
     Serial.print("Distance: ");
     Serial.println(distance);
 
@@ -87,7 +87,7 @@ void loop() {
     if (distance < 12) {
       // Send an MQTT message if a wave is detected
       mqttClient.beginMessage(topic);
-      mqttClient.print("Sohil Nagpal : Wave is detected, ");
+      mqttClient.print("Sohil Nagpal: Wave is detected, ");
       mqttClient.print("Distance: ");
       mqttClient.print(distance);
       mqttClient.endMessage();
